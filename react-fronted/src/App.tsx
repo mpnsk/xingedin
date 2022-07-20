@@ -36,11 +36,11 @@ export const App = () => {
                 <h1>Welcome to xingedin!</h1>
             </div>
 
-            {loading ? <LoadingSpinner/> : ""}
             <button onClick={getJobs}>get jobs</button>
             <ul>
                 {jobs.map(value => <li>{value.title}</li>)}
             </ul>
+            {loading ? <LoadingSpinner/> : ""}
         </>
     );
 }

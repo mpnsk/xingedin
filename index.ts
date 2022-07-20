@@ -6,7 +6,8 @@ import {RandomString} from "@pulumi/random/randomString";
 
 const imageName = "crawler"
 const project = "xingedin"
-const location = "europe-west3";
+const belgium = 'europe-west1'
+const location = belgium
 
 const myImage = new docker.Image(imageName, {
     imageName: pulumi.interpolate`gcr.io/${project}/${imageName}`,

@@ -8,7 +8,6 @@ export const App = () => {
 
     async function getJobs() {
         setLoading(true)
-        // (async () => {
         // const url = 'http://localhost:8080/jobs';
         const url = 'https://api-cc4q3pa43a-ew.a.run.app/jobs';
         const response = await fetch(url);
@@ -29,7 +28,6 @@ export const App = () => {
             result = await reader?.read()
         }
         setLoading(false)
-        // })()
     }
 
     return (

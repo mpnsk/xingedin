@@ -1,10 +1,13 @@
 import React, {useState} from 'react';
 import {Job} from "shared-types/MyType";
+import LoadingSpinner from "./LoadingSpinner";
 
 export const App = () => {
+    const [loading, setLoading] = useState<boolean>(false);
     const [jobs, setJobs] = useState<Job[]>([]);
 
     async function getJobs() {
+        setLoading(true)
         // (async () => {
         // const url = 'http://localhost:8080/jobs';
         const url = 'https://api-cc4q3pa43a-ew.a.run.app/jobs';
@@ -25,6 +28,7 @@ export const App = () => {
             }
             result = await reader?.read()
         }
+        setLoading(false)
         // })()
     }
 
@@ -33,6 +37,8 @@ export const App = () => {
             <div style={{textAlign: 'center'}}>
                 <h1>Welcome to xingedin!</h1>
             </div>
+
+            {loading ? <LoadingSpinner/> : ""}
             <button onClick={getJobs}>get jobs</button>
             <ul>
                 {jobs.map(value => <li>{value.title}</li>)}

@@ -1,10 +1,10 @@
 import express from 'express';
 import {chromium, ElementHandle} from "playwright";
 import cors from 'cors';
-import {Job} from 'shared-types/MyType'
+
+const headless = false;
 
 const app = express();
-
 app.get('/', async (req, res) => {
     // const promise = indeed();
     // const jobs = await promise;
@@ -18,39 +18,35 @@ app.use(cors({
 app.get('/jobs', async (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
-    const browser = await chromium.launch({headless: true});
+    const browser = await chromium.launch({headless, devtools: true});
     const page = await browser.newPage();
     await page.goto('https://de.indeed.com/jobs?q=Softwareentwickler');
     const postings = await page.$$('a.jcs-JobTitle');
-    const jobs: Job[] = []
 // for (let i = 0; i < postings.length; i++) {
-    for (let i = 0; i < Math.min(postings.length, 3); i++) {
-        const attribute = await postings[i]?.getAttribute('href');
-        const newPage = await browser.newPage();
-        await newPage.goto('https://de.indeed.com' + attribute)
+    for (let i = 0; i < Math.min(postings.length, 5); i++) {
+        const href = await postings[i]?.getAttribute('href');
+        const jobPage = await browser.newPage();
+        const url = 'https://de.indeed.com' + href;
+        await jobPage.goto(url)
 
-        const elementHandle: HTMLNull = await newPage.$('h1.icl-u-xs-mb--xs');
-        const s: string | undefined = await elementHandle?.innerText();
-        if (s == undefined) {
-            console.log('error!')
-            console.error("could not find job title")
-            console.error(elementHandle)
-            console.error(s)
-        } else {
-            const job = {title: s}
-            console.log('job #' + i, job)
-            jobs.push(job)
-            // res.write('#'+i);
-            res.write(JSON.stringify(job));
-        }
-        await newPage.close()
+        await jobPage.pause()
+        const title = await (await jobPage.$('h1.icl-u-xs-mb--xs'))?.textContent();
+        if (title == undefined) console.error('could not find job title', url)
+        const company = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div>div:nth-child(2)>div>a')
+            .textContent()
+        if (company == undefined) console.error('could not find job company', url)
+        const location = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div:nth-child(2)>div')
+            .textContent()
+        if (location == undefined) console.error('could not find job location', url)
+
+        const job = {title, location, company, url}
+        console.log('job #' + i, job)
+        res.write(JSON.stringify(job));
+        await jobPage.close()
         res.write('#####')
     }
-    console.log('end')
     await browser.close()
-    console.log(jobs)
     res.end()
-    // return jobs
 })
 
 

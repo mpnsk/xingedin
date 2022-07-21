@@ -2,7 +2,8 @@ import express from 'express';
 import {chromium, ElementHandle} from "playwright";
 import cors from 'cors';
 
-const headless = false;
+const headless = true;
+const maxJobs = 2;
 
 const app = express();
 app.get('/', async (req, res) => {
@@ -22,14 +23,12 @@ app.get('/jobs', async (req, res) => {
     const page = await browser.newPage();
     await page.goto('https://de.indeed.com/jobs?q=Softwareentwickler');
     const postings = await page.$$('a.jcs-JobTitle');
-// for (let i = 0; i < postings.length; i++) {
-    for (let i = 0; i < Math.min(postings.length, 5); i++) {
-        const href = await postings[i]?.getAttribute('href');
+
+    async function extract(href: Promise<string | null> | undefined) {
         const jobPage = await browser.newPage();
-        const url = 'https://de.indeed.com' + href;
+        const url = 'https://de.indeed.com' + await href;
         await jobPage.goto(url)
 
-        await jobPage.pause()
         const title = await (await jobPage.$('h1.icl-u-xs-mb--xs'))?.textContent();
         if (title == undefined) console.error('could not find job title', url)
         const company = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div>div:nth-child(2)>div>a')
@@ -40,11 +39,18 @@ app.get('/jobs', async (req, res) => {
         if (location == undefined) console.error('could not find job location', url)
 
         const job = {title, location, company, url}
-        console.log('job #' + i, job)
         res.write(JSON.stringify(job));
+        console.log(job)
         await jobPage.close()
         res.write('#####')
     }
+
+    const hrefs =[]
+    for (let i = 0; i < Math.min(postings.length, maxJobs); i++) {
+        const href: Promise<string | null> | undefined = postings[i]?.getAttribute('href');
+        hrefs.push(href)
+    }
+    await Promise.all(hrefs.map(value => extract(value)))
     await browser.close()
     res.end()
 })

@@ -2,28 +2,40 @@ import React, {useState} from 'react';
 import {Job} from "shared-types/MyType";
 import LoadingSpinner from "./LoadingSpinner";
 
+const url = 'http://localhost:8080/jobs';
+// const url = 'https://api-cc4q3pa43a-ew.a.run.app/jobs';
+
 export const App = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [jobs, setJobs] = useState<Job[]>([]);
 
     async function getJobs() {
         setLoading(true)
-        // const url = 'http://localhost:8080/jobs';
-        const url = 'https://api-cc4q3pa43a-ew.a.run.app/jobs';
         const response = await fetch(url);
         const body = response.body;
         const reader = body?.getReader();
         const decoder = new TextDecoder();
         let result = await reader?.read();
+        const delimiter = '#####';
         while (!result?.done) {
             const text = decoder.decode(result?.value);
             console.log('chunk is', text)
-            if (text === '#####' || text === '') {
+            if (text === delimiter || text === '') {
                 console.log('skip', text)
             } else {
-                console.log('parse', text)
-                const json = JSON.parse(text);
-                setJobs(jobs => [...jobs, json])
+                const strings = text.split(delimiter);
+                for (let i = 0; i < strings.length; i++) {
+                    const string = strings[i];
+                    if (string === "") continue
+                    try {
+                        const json = JSON.parse(string);
+                        setJobs(jobs => [...jobs, json])
+                    } catch (err) {
+                        console.log('i', i)
+                        console.log('string', string)
+                        console.error('error parsing ' + string, err)
+                    }
+                }
             }
             result = await reader?.read()
         }
@@ -38,7 +50,7 @@ export const App = () => {
 
             <button onClick={getJobs}>get jobs</button>
             <ul>
-                {jobs.map(value => <li>{value.title}</li>)}
+                {jobs.map(value => <li key={value.url}>{value.title}</li>)}
             </ul>
             {loading ? <LoadingSpinner/> : ""}
         </>

@@ -8,8 +8,17 @@ import xing from "./crawler/xing.js";
 
 const app = express();
 
-xing.get('/xing', app)
-indeed.get('/indeed', app)
+// xing.get('/xing', app)
+app.get('/xing', async (req, res)=>{
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    xing.get(req,res)
+})
+app.get('/indeed', async (req, res)=>{
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    indeed.get(req, res)
+})
 app.get('/', async (req, res) => {
     const link = (s: string): string => `<a href='/${s}'>${s}</a>`
     const s =

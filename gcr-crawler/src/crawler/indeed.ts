@@ -2,11 +2,7 @@ import {Express} from "express";
 import {chromium} from "playwright";
 import {devtools, headless, maxJobs} from "../settings.js";
 
-function get(path: string, app: Express) {
-    app.get(path, async (req, res) => {
-
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Transfer-Encoding', 'chunked');
+async function get(req: any, res: any) {
         const browser = await chromium.launch({headless, devtools});
         const page = await browser.newPage();
         await page.goto('https://de.indeed.com/jobs?q=Softwareentwickler');
@@ -41,7 +37,6 @@ function get(path: string, app: Express) {
         await Promise.all(hrefs.map(value => extract(value)))
         await browser.close()
         res.end()
-    })
 }
 
 export default {get}

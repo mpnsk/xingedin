@@ -12,17 +12,18 @@ async function get(req: any, res: any) {
     const locator: Locator = page.locator('button#consent-accept-button');
     await locator.click()
     const postings = await page.locator('section ul article a');
-    console.log('postings', postings)
 
     async function extract(href: string | null) {
-        const jobPage = await browser.newPage();
+        const jobPage = await browser.newPage()
         const url = 'https://xing.com' + href;
         console.log(url)
         await jobPage.goto(url)
-        const title = await jobPage.title();
-        const company = await jobPage.locator('main h2').first().textContent();
-        if (company == null) console.error('could not find job company', url)
-        const job = {title, url, company}
+        const title = await jobPage.title()
+        const company = await jobPage.locator('main h2').first().textContent()
+        if (company === null) console.error('could not find job company', url)
+        const location = await jobPage.locator('main ul>li>span').first().textContent()
+        if (location===null)console.error('could not find job location', url)
+        const job = {title, company, location, url}
         res.write(JSON.stringify(job));
 
 

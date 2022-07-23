@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.23.4-focal-amd64
+FROM mcr.microsoft.com/playwright:v1.24.0-jammy
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev

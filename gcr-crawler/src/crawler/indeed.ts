@@ -1,4 +1,3 @@
-import {Express} from "express";
 import {chromium} from "playwright";
 import {devtools, headless, maxJobs} from "../settings.js";
 
@@ -36,7 +35,6 @@ async function get(req: any, res: any) {
         }
         await Promise.all(hrefs.map(value => extract(value)))
         await browser.close()
-        res.end()
 }
 
 export default {get}

@@ -62,7 +62,6 @@ async function get(req: any, res: any) {
         return extract(value);
     }))
     await browser.close()
-    res.end()
 }
 
 

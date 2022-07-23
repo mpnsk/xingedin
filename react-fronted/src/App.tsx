@@ -8,8 +8,9 @@ const url = 'http://localhost:8080/jobs';
 // const url = 'https://api-cc4q3pa43a-ew.a.run.app/jobs';
 
 export const App = () => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [jobs, setJobs] = useState<Job[]>([]);
+    const [query, setQuery] = useState<string>("")
+    const [loading, setLoading] = useState<boolean>(false)
+    const [jobs, setJobs] = useState<Job[]>([])
 
     async function getJobs() {
         setLoading(true)
@@ -45,13 +46,28 @@ export const App = () => {
         setLoading(false)
     }
 
+    function buttonText(): string {
+        if (query.length == 0)
+            return "please input a search term"
+        else {
+            if (jobs.length == 0)
+                return "get jobs"
+            else
+                return "clear all and search again"
+        }
+    }
+
     return (
         <>
             <div style={{textAlign: 'center'}}>
                 <h1>Welcome to xingedin!</h1>
             </div>
 
-            <button onClick={getJobs}>{jobs.length == 0 ? "get jobs" : "clear all and get again"}</button>
+            <input type="text" name="query" value={query} placeholder="job title"
+                   onChange={event => setQuery(event.target.value)}/>
+            <button disabled={query.length == 0} onClick={getJobs}>
+                {buttonText()}
+            </button>
             {loading ? <LoadingSpinner/> : ""}
             <TableContainer component={Paper}>
                 <Table sx={{minWidth: 650}} aria-label="simple table">

@@ -8,7 +8,10 @@ import {devtools, headless, maxJobs} from "../settings.js";
 async function get(req: any, res: any) {
     const browser = await chromium.launch({headless, devtools});
     const page = await browser.newPage();
-    await page.goto('https://www.xing.com/jobs/search?utf8=%E2%9C%93&nrs=1&keywords=' + req.query.q + '&location=' + req.query.l + '&radius=70');
+    await page.goto('https://www.xing.com/jobs/search?utf8=%E2%9C%93&nrs=1' +
+        '&keywords=' + req.query.q +
+        '&location=' + req.query.l +
+        '&radius=' + req.query.r);
     const locator: Locator = page.locator('button#consent-accept-button');
     await locator.click()
     const postings = await page.locator('section ul article a');

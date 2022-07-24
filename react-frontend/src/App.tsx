@@ -9,13 +9,14 @@ const url = 'http://localhost:8080/jobs';
 
 export const App = () => {
     const [query, setQuery] = useState<string>("")
+    const [location, setLocation] = useState<string>("")
     const [loading, setLoading] = useState<boolean>(false)
     const [jobs, setJobs] = useState<Job[]>([])
 
     async function getJobs() {
         setLoading(true)
         setJobs([])
-        const response = await fetch(url);
+        const response = await fetch(url + "?q=" + query + "&l="+location);
         const body = response.body;
         const reader = body?.getReader();
         const decoder = new TextDecoder();
@@ -63,8 +64,10 @@ export const App = () => {
                 <h1>Welcome to xingedin!</h1>
             </div>
 
-            <input type="text" name="query" value={query} placeholder="job title"
+            <input type="text" value={query} placeholder="job title"
                    onChange={event => setQuery(event.target.value)}/>
+            <input type="text" value={location} placeholder="location"
+                   onChange={event => setLocation(event.target.value)}/>
             <button disabled={query.length == 0} onClick={getJobs}>
                 {buttonText()}
             </button>

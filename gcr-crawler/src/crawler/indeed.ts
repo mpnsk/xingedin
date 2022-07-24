@@ -4,7 +4,7 @@ import {devtools, headless, maxJobs} from "../settings.js";
 async function get(req: any, res: any) {
         const browser = await chromium.launch({headless, devtools});
         const page = await browser.newPage();
-        await page.goto('https://de.indeed.com/jobs?q=Softwareentwickler');
+        await page.goto('https://de.indeed.com/jobs?q=' + req.query.q + "&l=" +req.query.l);
         const postings = await page.$$('a.jcs-JobTitle');
 
         async function extract(href: Promise<string | null> | undefined) {

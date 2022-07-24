@@ -8,7 +8,7 @@ import {devtools, headless, maxJobs} from "../settings.js";
 async function get(req: any, res: any) {
     const browser = await chromium.launch({headless, devtools});
     const page = await browser.newPage();
-    await page.goto('https://www.xing.com/jobs/search?utf8=%E2%9C%93&nrs=1&keywords=werkstudent%2Bjava&location=leipzig&radius=70');
+    await page.goto('https://www.xing.com/jobs/search?utf8=%E2%9C%93&nrs=1&keywords=' + req.query.q + '&location=' + req.query.l + '&radius=70');
     const locator: Locator = page.locator('button#consent-accept-button');
     await locator.click()
     const postings = await page.locator('section ul article a');
@@ -22,7 +22,7 @@ async function get(req: any, res: any) {
         const company = await jobPage.locator('main h2').first().textContent()
         if (company === null) console.error('could not find job company', url)
         const location = await jobPage.locator('main ul>li>span').first().textContent()
-        if (location===null)console.error('could not find job location', url)
+        if (location === null) console.error('could not find job location', url)
         const job = {title, company, location, url}
         res.write(JSON.stringify(job));
 

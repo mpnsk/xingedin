@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "concurrently --kill-others 'npm run dev:gcr-crawler' 'npm run dev:react-frontend'",
     "dev:gcr-crawler": "npm --prefix gcr-crawler run dev",
-    "dev:react-frontend": "npm --prefix react-fronted run start"
+    "dev:react-frontend": "npm --prefix react-frontend run start"
   },
   "devDependencies": {
     "@types/node": "^14",

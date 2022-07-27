@@ -21,29 +21,24 @@ async function get(req: any, res: any) {
         const url = 'https://xing.com' + href;
         console.log(url)
         await jobPage.goto(url)
+
         const title = await jobPage.title()
+
         const company = await jobPage.locator('main h2').first().textContent()
         if (company === null) console.error('could not find job company', url)
+
         const location = await jobPage.locator('main ul>li>span').first().textContent()
         if (location === null) console.error('could not find job location', url)
-        const job = {title, company, location, url}
+
+        const publishDate = await jobPage.locator('[class*=info-info-time-]').first().textContent()
+        if (publishDate === null) console.error('could not find publish date', url)
+
+        const job = {title, company, location, publishDate, url}
+
         res.write(JSON.stringify(job));
-
-
-        // const title = await (await jobPage.$('h1.icl-u-xs-mb--xs'))?.textContent();
-        // if (title == undefined) console.error('could not find job title', url)
-        // const company = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div>div:nth-child(2)>div>a')
-        //     .textContent()
-        // if (company == undefined) console.error('could not find job company', url)
-        // const location = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div:nth-child(2)>div')
-        //     .textContent()
-        // if (location == undefined) console.error('could not find job location', url)
-        //
-        // const job = {title, location, company, url}
-        // res.write(JSON.stringify(job));
-        // console.log(job)
-        // await jobPage.close()
-        // res.write('#####')
+        console.log(job)
+        await jobPage.close()
+        res.write('#####')
     }
 
     const hrefs = []

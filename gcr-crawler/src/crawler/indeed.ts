@@ -17,14 +17,32 @@ async function get(req: any, res: any) {
 
         const title = await (await jobPage.$('h1.icl-u-xs-mb--xs'))?.textContent();
         if (title == undefined) console.error('could not find job title', url)
+
         const company = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div>div:nth-child(2)>div>a')
             .textContent()
         if (company == undefined) console.error('could not find job company', url)
+
         const location = await jobPage.locator('div.jobsearch-CompanyInfoContainer>div>div>div>div:nth-child(2)>div')
             .textContent()
         if (location == undefined) console.error('could not find job location', url)
 
-        const job = {title, location, company, url}
+        const publishDateRaw = await jobPage.locator('.jobsearch-JobMetadataFooter')
+            .first()
+            .innerText()
+        let publishDate
+        if (publishDateRaw === undefined) {
+            console.error('could not find publish date', url)
+        }
+        else {
+            const anyNumber = '\\d+';
+            const maybePlus = '\\+?';
+            const regexString = `vor ${anyNumber}${maybePlus} Tag`
+            const ignoreCase = "i";
+            publishDate = publishDateRaw.match(new RegExp(regexString, ignoreCase))
+        }
+
+        const job = {title, location, company, publishDate, url}
+
         res.write(JSON.stringify(job));
         console.log(job)
         await jobPage.close()

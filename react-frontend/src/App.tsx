@@ -90,6 +90,7 @@ export const App = () => {
                             <TableCell>Title</TableCell>
                             <TableCell align="right">Company</TableCell>
                             <TableCell align="right">Location</TableCell>
+                            <TableCell align="right">published</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -105,6 +106,7 @@ export const App = () => {
                                 </TableCell>
                                 <TableCell align="right">{job.company}</TableCell>
                                 <TableCell align="right">{job.location}</TableCell>
+                                <TableCell align="right">{job.publishDate}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

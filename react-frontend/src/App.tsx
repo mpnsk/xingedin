@@ -9,13 +9,15 @@ const url = 'http://localhost:8080/jobs';
 
 export const App = () => {
     const [query, setQuery] = useState<string>("")
+    const [location, setLocation] = useState<string>("")
+    const [locationRadius, setLocationRadius] = useState<number>(0)
     const [loading, setLoading] = useState<boolean>(false)
     const [jobs, setJobs] = useState<Job[]>([])
 
     async function getJobs() {
         setLoading(true)
         setJobs([])
-        const response = await fetch(url);
+        const response = await fetch(url + "?q=" + query + "&l=" + location + "&r=" + locationRadius);
         const body = response.body;
         const reader = body?.getReader();
         const decoder = new TextDecoder();
@@ -63,8 +65,20 @@ export const App = () => {
                 <h1>Welcome to xingedin!</h1>
             </div>
 
-            <input type="text" name="query" value={query} placeholder="job title"
+            <input type="text" value={query} placeholder="job title"
                    onChange={event => setQuery(event.target.value)}/>
+            <input type="text" value={location} placeholder="location"
+                   onChange={event => setLocation(event.target.value)}/>
+            <select value={locationRadius} onChange={event => setLocationRadius(parseInt(event.target.value))}>
+                <option value="0">exact location</option>
+                <option value="10">10 km</option>
+                <option value="50">50 km</option>
+                <option value="100">100 km</option>
+                <option value="150">150 km</option>
+                <option value="200">200 km</option>
+            </select>
+            {/*type="number" value={locationRadius == 0 ?} placeholder="location"*/}
+            {/*onChange={event => setLocation(event.target.value)}/>*/}
             <button disabled={query.length == 0} onClick={getJobs}>
                 {buttonText()}
             </button>
